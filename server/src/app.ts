@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
 import healthRoutes from "@/routes/health.routes";
+import authRoutes from "@/routes/auth.routes";
 import { errorHandler, notFoundHandler } from "@/middleware/errorHandler";
 
 const app: Application = express();
@@ -27,7 +28,7 @@ if (process.env.NODE_ENV === "development") {
 // --- Routes ---
 app.use("/api/health", healthRoutes);
 // More routes get mounted here in later phases:
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 // app.use("/api/courses", courseRoutes);
 
 // --- Error handling (must be last) ---
