@@ -71,6 +71,7 @@ model Course {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime @deletedAt
 
   @@map("courses")
 }

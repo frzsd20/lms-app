@@ -2,9 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { prisma } from "@/config/db";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "@/utils/jwt";
+import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from "@/utils/jwt";
 import { hashToken } from "@/utils/hashToken";
 import { AppError } from "@/middleware/errorHandler";
+import { Role } from "@prisma/client";
 
 const REFRESH_COOKIE_NAME = "refreshToken";
 const REFRESH_TOKEN_EXPIRY_DAYS = 7;
@@ -209,4 +210,30 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
   }catch (error) {
     next(error);
   }
+}
+
+export function attachUserIfPresent(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next(); // no token at all - continue as a guest
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const payload = verifyAccessToken(token);
+    req.user = {
+      id: payload.id,
+      email: payload.email,
+      role: payload.role as Role,
+    };
+  } catch {
+    // Invalid/expired token - don't error, just treat as a guest.
+    // We intentionally swallow this rather than calling next(error),
+    // since an optional-auth route should never punish a bad/stale
+    // token, only fail to identify who's asking.
+  }
+
+  next();
 }
