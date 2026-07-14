@@ -8,6 +8,7 @@ import healthRoutes from "@/routes/health.routes";
 import authRoutes from "@/routes/auth.routes";
 import courseRoutes from "@/routes/course.routes";
 import moduleRoutes from "@/routes/module.routes"; 
+import lessonRoutes from "@/routes/lesson.routes";
 
 import { errorHandler, notFoundHandler } from "@/middleware/errorHandler";
 
@@ -34,6 +35,7 @@ app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api", moduleRoutes); 
+app.use("/api", lessonRoutes); 
 
 
 // --- Error handling (must be last) ---
