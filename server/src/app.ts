@@ -9,6 +9,7 @@ import authRoutes from "@/routes/auth.routes";
 import courseRoutes from "@/routes/course.routes";
 import moduleRoutes from "@/routes/module.routes"; 
 import lessonRoutes from "@/routes/lesson.routes";
+import enrollmentRoutes from "@/routes/enrollment.routes";
 
 import { errorHandler, notFoundHandler } from "@/middleware/errorHandler";
 
@@ -36,6 +37,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api", moduleRoutes); 
 app.use("/api", lessonRoutes); 
+app.use("/api", enrollmentRoutes); 
 
 
 // --- Error handling (must be last) ---
