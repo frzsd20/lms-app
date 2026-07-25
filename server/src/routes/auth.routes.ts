@@ -1,14 +1,16 @@
 import { Router } from "express";
 import { register, login, refreshAccessToken, logout } from "@/controllers/auth.controller";
 import { protectRoute } from "@/middleware/auth.middleware";
+import { validate } from "@/middleware/validation.middleware";
+import { loginSchema, registerSchema } from "@/validators/auth.validator";
 
 const router = Router();
 
 // POST /api/auth/register - create a new account
-router.post("/register", register);
+router.post("/register", validate(registerSchema), register);
 
 // POST /api/auth/login - authenticate and receive tokens
-router.post("/login", login);
+router.post("/login", validate(loginSchema), login);
 
 // POST /api/auth/refresh - get a new access token using the refresh cookie
 router.post("/refresh", refreshAccessToken);

@@ -53,3 +53,29 @@ export function AuthorizeRoles(...allowedRoles: Role[]) {
         }
     };   
 }
+
+export function attachUserIfPresent(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next(); // no token at all - continue as a guest
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const payload = verifyAccessToken(token);
+    req.user = {
+      id: payload.id,
+      email: payload.email,
+      role: payload.role as Role,
+    };
+  } catch {
+    // Invalid/expired token - don't error, just treat as a guest.
+    // We intentionally swallow this rather than calling next(error),
+    // since an optional-auth route should never punish a bad/stale
+    // token, only fail to identify who's asking.
+  }
+
+  next();
+}
