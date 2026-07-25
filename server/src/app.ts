@@ -13,6 +13,7 @@ import enrollmentRoutes from "@/routes/enrollment.routes";
 import lessonProgressRoutes from '@/routes/lesson_progress.routes';
 
 import { errorHandler, notFoundHandler } from "@/middleware/errorHandler";
+import { authLimiter, generalLimiter } from "@/middleware/rateLimiter.middleware";
 
 const app: Application = express();
 
@@ -30,10 +31,12 @@ app.use(cookieParser()); // parses cookies
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev")); // logs each request to the console
 }
+app.use("/api", generalLimiter);
+app.use("/api/auth", authLimiter);
 
 // --- Routes ---
 app.use("/api/health", healthRoutes);
-// More routes get mounted here in later phases:
+
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api", moduleRoutes); 
