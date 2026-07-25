@@ -1,3 +1,4 @@
+import { logger } from "@/config/logger";
 import { Request, Response, NextFunction } from "express";
 
 // Custom error class so we can attach an HTTP status code to thrown errors
@@ -22,9 +23,7 @@ export function errorHandler(
   const statusCode = err instanceof AppError ? err.statusCode : 500;
   const message = err.message || "Internal server error";
 
-  if (process.env.NODE_ENV === "development") {
-    console.error(err);
-  }
+  logger.error({ err, statusCode }, message);
 
   res.status(statusCode).json({
     status: "error",

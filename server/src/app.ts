@@ -14,6 +14,8 @@ import lessonProgressRoutes from '@/routes/lesson_progress.routes';
 
 import { errorHandler, notFoundHandler } from "@/middleware/errorHandler";
 import { authLimiter, generalLimiter } from "@/middleware/rateLimiter.middleware";
+import { pinoHttp } from "pino-http";
+import { logger } from "@/config/logger";
 
 const app: Application = express();
 
@@ -28,9 +30,20 @@ app.use(
 app.use(express.json()); // parses JSON request bodies
 app.use(cookieParser()); // parses cookies
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev")); // logs each request to the console
-}
+app.use(
+  pinoHttp({
+    logger,
+    redact: {
+      paths: [
+        "req.headers.authorization",
+        "req.headers.cookie",
+        'res.headers["set-cookie"]',
+      ],
+      censor: "[REDACTED]",
+    },
+  })
+);
+
 app.use("/api", generalLimiter);
 app.use("/api/auth", authLimiter);
 
