@@ -1,4 +1,5 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
+import crypto from "crypto";
 
 interface TokenPayload {
   id: string;
@@ -8,14 +9,18 @@ interface TokenPayload {
 
 export function generateAccessToken(payload: TokenPayload): string {
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET as string, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
+    expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || "15m") as SignOptions["expiresIn"],
   });
 }
 
 export function generateRefreshToken(payload: TokenPayload): string {
-  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET as string, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
-  });
+  return jwt.sign(
+    { ...payload, jti: crypto.randomUUID() },
+    process.env.JWT_REFRESH_SECRET as string,
+    {
+      expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || "7d") as SignOptions["expiresIn"],
+    }
+  );
 }
 
 export function verifyAccessToken(token: string): TokenPayload {
