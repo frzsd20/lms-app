@@ -34,6 +34,7 @@ describe("Enrollment - Prerequisites", () => {
         description: "Must be completed first.",
         price: 0,
       });
+
     const prereqCourseId = prereqCourseRes.body.course.id;
 
     await request(app)
