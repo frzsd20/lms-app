@@ -10,6 +10,7 @@ export const authLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    skip: () => process.env.NODE_ENV === "test",
 });
 
 // General limiter for the rest of the API
